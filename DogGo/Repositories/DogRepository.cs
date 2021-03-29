@@ -72,7 +72,7 @@ namespace DogGo.Repositories
                     cmd.CommandText = @"
                     INSERT INTO Dog ([Name], Breed, OwnerId, Notes, ImageUrl)
                     OUTPUT INSERTED.ID
-                    VALUES (@name, @breed, @notes, @ownerId, @imageUrl)
+                    VALUES (@name, @breed, @ownerId, @notes, @imageUrl)
                 ";
 
                     cmd.Parameters.AddWithValue("@name", dog.Name);

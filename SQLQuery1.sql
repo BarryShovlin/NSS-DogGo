@@ -1,1 +1,1 @@
-﻿SElect * from Owner
+﻿SELECT * FROM Dog

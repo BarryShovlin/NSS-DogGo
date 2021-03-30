@@ -37,11 +37,17 @@
                         <tr>
                             <td>@walk.Date</td>
                             <td>@walk.OwnerName</td>
-                            <td>@walk.Duration</td>
+                            <td>@(walk.Duration / 60) minutes</td>
                         </tr>
                     }
                 </tbody>
             </table>
+            <secion class="col-8 container mt-5">
+                <h4 class="text-center">Total Walking Time</h4>
+                <div class="text-muted">
+                    @Model.Walks
+                </div>
+            </secion>
 
 
         </section>

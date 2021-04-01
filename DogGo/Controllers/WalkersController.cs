@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DogGo.Controllers
@@ -13,27 +14,52 @@ namespace DogGo.Controllers
     public class WalkersController : Controller
     {
         private readonly IWalkerRepository _walkerRepo;
-        private readonly IWalkRepository _walkRepo;
+        private readonly IOwnerRepository _ownerRepo;
+        private readonly INeighborhoodRepository _neighborhoodRepo;
+        private readonly IWalkRepository _walkRepository;
 
         // ASP.NET will give us an instance of our Walker Repository. This is called "Dependency Injection"
-        public WalkersController(IWalkerRepository walkerRepository, IWalkRepository walkRepository)
+        public WalkersController(IWalkerRepository walkerRepository, IOwnerRepository ownerRepository, INeighborhoodRepository neighborhoodRepository, IWalkRepository walkRepository)
         {
             _walkerRepo = walkerRepository;
-            _walkRepo = walkRepository;
+            _ownerRepo = ownerRepository;
+            _neighborhoodRepo = neighborhoodRepository;
+            _walkRepository = walkRepository;
+        }
+
+        private int GetCurrentUserId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (id == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return int.Parse(id);
+            }
         }
         // GET: WalkersController
         public ActionResult Index()
         {
-            List<Walker> walkers = _walkerRepo.GetAllWalkers();
+            int ownerId = GetCurrentUserId();
+            if (ownerId != 0)
+            {
+                Owner currentOwner = _ownerRepo.GetOwnerById(ownerId);
+                List<Walker> walkers = _walkerRepo.GetWalkersInNeighborhood(currentOwner.NeighborhoodId);
 
-            return View(walkers);
+                return View(walkers);
+            }
+            List<Walker> allWalkers = _walkerRepo.GetAllWalkers();
+            return View(allWalkers);
         }
+
 
         // GET: WalkersController/Details/5
         public ActionResult Details(int id)
         {
             Walker walker = _walkerRepo.GetWalkerById(id);
-            List<Walk> walks = _walkRepo.GetAllWalks();
+           List<Walk> walks = _walkRepository.GetAllWalks();
 
             if (walker == null)
             {

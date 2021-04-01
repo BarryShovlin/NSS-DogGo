@@ -75,7 +75,12 @@ namespace DogGo.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
+            int ownerId = GetCurrentUserId();
             Dog dog = _dogRepo.GetDogById(id);
+            if (ownerId != dog.OwnerId)
+            {
+                return Unauthorized();
+            }
 
             return View(dog);
         }
@@ -100,11 +105,16 @@ namespace DogGo.Controllers
         [Authorize]
         public ActionResult Edit(int id)
         {
+            int ownerId = GetCurrentUserId();
             Dog dog = _dogRepo.GetDogById(id);
 
             if (dog == null)
             {
                 return NotFound();
+            }
+            else if (ownerId != dog.OwnerId)
+            {
+                return Unauthorized();
             }
 
             return View(dog);
